@@ -1,0 +1,6 @@
+@TransOil.WebApi_HostAddress = http://localhost:5100
+
+GET {{TransOil.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
