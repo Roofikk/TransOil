@@ -20,6 +20,7 @@ public class TransOilContext : DbContext
     public DbSet<VoltageTransformer> VoltageTransformers { get; set; }
 
     public DbSet<MeasurementDevice> MeasurementDevices { get; set; }
+    public DbSet<Measurement> Measurements { get; set; }
 
 
     public TransOilContext(DbContextOptions<TransOilContext> options)
@@ -138,6 +139,18 @@ public class TransOilContext : DbContext
         {
             e.HasKey(x => x.DeviceId);
             e.Property(x => x.DeviceId).ValueGeneratedOnAdd();
+        });
+
+        modelBuilder.Entity<Measurement>(e =>
+        {
+            e.HasKey(x => new { x.MeasurementDeviceId, x.MeasurementPointId, x.Date });
+
+            e.HasOne(x => x.MeasurementDevice)
+                .WithMany(x => x.Measurements)
+                .HasForeignKey(x => x.MeasurementDeviceId);
+            e.HasOne(x => x.MeasurementPoint)
+                .WithMany(x => x.Measurements)
+                .HasForeignKey(x => x.MeasurementPointId);
         });
     }
 }

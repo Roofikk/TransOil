@@ -2,7 +2,6 @@
 
 public class Measurement
 {
-    public int MeasurementId { get; set; }
     public DateTime Date { get; set; } = DateTime.Now;
 
     public int MeasurementPointId { get; set; }

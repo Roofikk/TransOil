@@ -17,4 +17,7 @@ public class MeasurementPoint
     public virtual ElectricEnergyCounter ElectricityCounter { get; set; } = null!;
     public virtual CurrentTransformer CurrentTransformer { get; set; } = null!;
     public virtual VoltageTransformer VoltageTransformer { get; set; } = null!;
+
+    public IEnumerable<Measurement> Measurements { get; set; } = [];
+    public IEnumerable<MeasurementDevice> Devices { get; set; } = [];
 }
