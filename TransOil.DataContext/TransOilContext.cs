@@ -11,10 +11,10 @@ public class TransOilContext : DbContext
     public DbSet<ChildCompany> ChildCompanies { get; set; }
     public DbSet<Customer> Customers { get; set; }
     public DbSet<MeasurementPoint> MeasurementPoints { get; set; }
-    public DbSet<ElectricitySupplyPoint> SupplyPoints { get; set; }
+    public DbSet<SupplyPoint> SupplyPoints { get; set; }
 
     public DbSet<CounterBase> Counters { get; set; }
-    public DbSet<ElectricEnergyCounter> ElectricEnergyCounters { get; set; }
+    public DbSet<ElectricityCounter> ElectricEnergyCounters { get; set; }
     public DbSet<TransformerCounterBase> ElectricCounters { get; set; }
     public DbSet<CurrentTransformer> CurrentTransformers { get; set; }
     public DbSet<VoltageTransformer> VoltageTransformers { get; set; }
@@ -73,18 +73,9 @@ public class TransOilContext : DbContext
 
         modelBuilder.Entity<Company>(e =>
         {
-            e.ToTable("Companies");
             e.HasMany(x => x.ChildCompanies)
-                .WithOne(x => x.Company)
-                .HasForeignKey(x => x.CompanyId);
-        });
-
-        modelBuilder.Entity<ChildCompany>(e =>
-        {
-            e.ToTable("Companies");
-            e.HasMany(x => x.Customers)
-                .WithOne(x => x.Company)
-                .HasForeignKey(x => x.CompanyId);
+                .WithOne(x => x.ParentCompany)
+                .HasForeignKey(x => x.ParentCompanyId);
         });
 
         modelBuilder.Entity<Customer>(e =>
@@ -99,37 +90,62 @@ public class TransOilContext : DbContext
                 .HasForeignKey(x => x.CustomerId);
         });
 
-        modelBuilder.Entity<ElectricEnergyCounter>(e =>
+        modelBuilder.Entity<CounterBase>(e =>
         {
-            e.ToTable("Counters");
-            e.HasOne(x => x.MeasurementPoint)
-                .WithOne(x => x.ElectricityCounter)
-                .HasForeignKey<ElectricEnergyCounter>(x => x.MeasurementPointId);
+            e.ToTable("Counters")
+                .HasDiscriminator(x => x.Discriminator)
+                .HasValue<ElectricityCounter>("ElectricityCounter")
+                .HasValue<CurrentTransformer>("CurrentTransformer")
+                .HasValue<VoltageTransformer>("VoltageTransformer");
+
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Id).ValueGeneratedOnAdd();
+
+            e.HasIndex(x => new { x.MeasurementPointId, x.Discriminator })
+                .HasDatabaseName("IX_Counters_MeasurementPointId_Discriminator")
+                .IsUnique();
+        });
+
+        modelBuilder.Entity<ElectricityCounter>(e =>
+        {
+            e.HasIndex(x => x.MeasurementPointId)
+                .IsUnique(false);
         });
 
         modelBuilder.Entity<CurrentTransformer>(e =>
         {
-            e.ToTable("Counters");
-            e.HasOne(x => x.MeasurementPoint)
-                .WithOne(x => x.CurrentTransformer)
-                .HasForeignKey<CurrentTransformer>(x => x.MeasurementPointId);
+            e.HasIndex(x => x.MeasurementPointId)
+                .IsUnique(false);
         });
 
         modelBuilder.Entity<VoltageTransformer>(e =>
         {
-            e.ToTable("Counters");
-            e.HasOne(x => x.MeasurementPoint)
-                .WithOne(x => x.VoltageTransformer)
-                .HasForeignKey<VoltageTransformer>(x => x.MeasurementPointId);
+            e.HasIndex(x => x.MeasurementPointId)
+                .IsUnique(false);
         });
 
         modelBuilder.Entity<MeasurementPoint>(e =>
         {
             e.HasKey(x => x.MeasurementPointId);
             e.Property(x => x.MeasurementPointId).ValueGeneratedOnAdd();
+
+            e.HasOne(x => x.VoltageTransformer)
+                .WithOne(x => x.MeasurementPoint)
+                .HasForeignKey<VoltageTransformer>(x => x.MeasurementPointId)
+                .HasConstraintName("FK_Counters_MeasurementPoints_MeasurementPointId");
+
+            e.HasOne(x => x.CurrentTransformer)
+                .WithOne(x => x.MeasurementPoint)
+                .HasForeignKey<CurrentTransformer>(x => x.MeasurementPointId)
+                .HasConstraintName("FK_Counters_MeasurementPoints_MeasurementPointId");
+
+            e.HasOne(x => x.ElectricityCounter)
+                .WithOne(x => x.MeasurementPoint)
+                .HasForeignKey<ElectricityCounter>(x => x.MeasurementPointId)
+                .HasConstraintName("FK_Counters_MeasurementPoints_MeasurementPointId");
         });
 
-        modelBuilder.Entity<ElectricitySupplyPoint>(e =>
+        modelBuilder.Entity<SupplyPoint>(e =>
         {
             e.HasKey(x => x.SupplyPointId);
             e.Property(x => x.SupplyPointId).ValueGeneratedOnAdd();
@@ -143,14 +159,15 @@ public class TransOilContext : DbContext
 
         modelBuilder.Entity<Measurement>(e =>
         {
-            e.HasKey(x => new { x.MeasurementDeviceId, x.MeasurementPointId, x.Date });
+            e.HasKey(x => new { x.MeasurementPointId, x.MeasurementDeviceId, x.Date });
+
+            e.HasOne(x => x.MeasurementPoint)
+                .WithMany(x => x.Measurements)
+                .HasForeignKey(x => x.MeasurementPointId);
 
             e.HasOne(x => x.MeasurementDevice)
                 .WithMany(x => x.Measurements)
                 .HasForeignKey(x => x.MeasurementDeviceId);
-            e.HasOne(x => x.MeasurementPoint)
-                .WithMany(x => x.Measurements)
-                .HasForeignKey(x => x.MeasurementPointId);
         });
     }
 }

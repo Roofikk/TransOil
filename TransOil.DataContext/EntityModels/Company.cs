@@ -7,5 +7,5 @@ namespace TransOil.DataContext.EntityModels;
 /// </summary>
 public class Company : CompanyBase
 {
-    public IEnumerable<ChildCompany>? ChildCompanies { get; set; } = [];
+    public ICollection<ChildCompany> ChildCompanies { get; set; } = [];
 }

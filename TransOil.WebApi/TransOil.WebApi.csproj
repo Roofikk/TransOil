@@ -14,4 +14,8 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TransOil.DataContext\TransOil.DataContext.csproj" />
+  </ItemGroup>
+
 </Project>

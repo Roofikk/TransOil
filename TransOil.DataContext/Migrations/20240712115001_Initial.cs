@@ -32,21 +32,12 @@ namespace TransOil.DataContext.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Companies", x => x.CompanyId);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "MeasurementDevices",
-                columns: table => new
-                {
-                    DeviceId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "varchar(50)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MeasurementDevices", x => x.DeviceId);
+                    table.ForeignKey(
+                        name: "FK_Companies_Companies_ParentCompanyId",
+                        column: x => x.ParentCompanyId,
+                        principalTable: "Companies",
+                        principalColumn: "CompanyId",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -56,7 +47,7 @@ namespace TransOil.DataContext.Migrations
                 {
                     CustomerId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "varchar(50)", nullable: false)
+                    Name = table.Column<string>(type: "varchar(100)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Address = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -80,7 +71,7 @@ namespace TransOil.DataContext.Migrations
                 {
                     MeasurementPointId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "varchar(50)", nullable: false)
+                    Name = table.Column<string>(type: "varchar(100)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CustomerId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -102,7 +93,7 @@ namespace TransOil.DataContext.Migrations
                 {
                     SupplyPointId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "varchar(50)", nullable: false)
+                    Name = table.Column<string>(type: "varchar(100)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     MaxVoltage = table.Column<double>(type: "double", nullable: false),
                     CustomerId = table.Column<int>(type: "int", nullable: false)
@@ -126,11 +117,12 @@ namespace TransOil.DataContext.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Number = table.Column<int>(type: "int", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(50)", nullable: false),
-                    VerifyDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    MeasurementPointId = table.Column<int>(type: "int", nullable: false),
-                    Discriminator = table.Column<string>(type: "varchar(34)", maxLength: 34, nullable: false)
+                    Type = table.Column<string>(type: "varchar(100)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    VerifyDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Discriminator = table.Column<string>(type: "varchar(50)", maxLength: 34, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    MeasurementPointId = table.Column<int>(type: "int", nullable: false),
                     TranformerRatio = table.Column<double>(type: "double", nullable: true)
                 },
                 constraints: table =>
@@ -146,26 +138,23 @@ namespace TransOil.DataContext.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "MeasurementDeviceMeasurementPoint",
+                name: "MeasurementDevices",
                 columns: table => new
                 {
-                    DevicesDeviceId = table.Column<int>(type: "int", nullable: false),
-                    MeasurementPointsMeasurementPointId = table.Column<int>(type: "int", nullable: false)
+                    DeviceId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "varchar(100)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    SupplyPointId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MeasurementDeviceMeasurementPoint", x => new { x.DevicesDeviceId, x.MeasurementPointsMeasurementPointId });
+                    table.PrimaryKey("PK_MeasurementDevices", x => x.DeviceId);
                     table.ForeignKey(
-                        name: "FK_MeasurementDeviceMeasurementPoint_MeasurementDevices_Devices~",
-                        column: x => x.DevicesDeviceId,
-                        principalTable: "MeasurementDevices",
-                        principalColumn: "DeviceId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_MeasurementDeviceMeasurementPoint_MeasurementPoints_Measurem~",
-                        column: x => x.MeasurementPointsMeasurementPointId,
-                        principalTable: "MeasurementPoints",
-                        principalColumn: "MeasurementPointId",
+                        name: "FK_MeasurementDevices_SupplyPoints_SupplyPointId",
+                        column: x => x.SupplyPointId,
+                        principalTable: "SupplyPoints",
+                        principalColumn: "SupplyPointId",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -174,13 +163,13 @@ namespace TransOil.DataContext.Migrations
                 name: "Measurements",
                 columns: table => new
                 {
-                    Date = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValue: new DateTime(2024, 7, 11, 16, 8, 15, 29, DateTimeKind.Local).AddTicks(9853)),
+                    Date = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     MeasurementPointId = table.Column<int>(type: "int", nullable: false),
                     MeasurementDeviceId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Measurements", x => new { x.MeasurementDeviceId, x.MeasurementPointId, x.Date });
+                    table.PrimaryKey("PK_Measurements", x => new { x.MeasurementPointId, x.MeasurementDeviceId, x.Date });
                     table.ForeignKey(
                         name: "FK_Measurements_MeasurementDevices_MeasurementDeviceId",
                         column: x => x.MeasurementDeviceId,
@@ -197,9 +186,19 @@ namespace TransOil.DataContext.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Companies_ParentCompanyId",
+                table: "Companies",
+                column: "ParentCompanyId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Counters_MeasurementPointId",
                 table: "Counters",
-                column: "MeasurementPointId",
+                column: "MeasurementPointId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Counters_MeasurementPointId_Discriminator",
+                table: "Counters",
+                columns: new[] { "MeasurementPointId", "Discriminator" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -208,9 +207,10 @@ namespace TransOil.DataContext.Migrations
                 column: "CompanyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MeasurementDeviceMeasurementPoint_MeasurementPointsMeasureme~",
-                table: "MeasurementDeviceMeasurementPoint",
-                column: "MeasurementPointsMeasurementPointId");
+                name: "IX_MeasurementDevices_SupplyPointId",
+                table: "MeasurementDevices",
+                column: "SupplyPointId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_MeasurementPoints_CustomerId",
@@ -218,9 +218,9 @@ namespace TransOil.DataContext.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Measurements_MeasurementPointId",
+                name: "IX_Measurements_MeasurementDeviceId",
                 table: "Measurements",
-                column: "MeasurementPointId");
+                column: "MeasurementDeviceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SupplyPoints_CustomerId",
@@ -235,19 +235,16 @@ namespace TransOil.DataContext.Migrations
                 name: "Counters");
 
             migrationBuilder.DropTable(
-                name: "MeasurementDeviceMeasurementPoint");
-
-            migrationBuilder.DropTable(
                 name: "Measurements");
-
-            migrationBuilder.DropTable(
-                name: "SupplyPoints");
 
             migrationBuilder.DropTable(
                 name: "MeasurementDevices");
 
             migrationBuilder.DropTable(
                 name: "MeasurementPoints");
+
+            migrationBuilder.DropTable(
+                name: "SupplyPoints");
 
             migrationBuilder.DropTable(
                 name: "Customers");

@@ -6,7 +6,7 @@
 public class ChildCompany : CompanyBase
 {
     public int ParentCompanyId { get; set; }
-    public Company Company { get; set; } = null!;
+    public Company ParentCompany { get; set; } = null!;
 
     public IEnumerable<Customer> Customers { get; set; } = [];
 }

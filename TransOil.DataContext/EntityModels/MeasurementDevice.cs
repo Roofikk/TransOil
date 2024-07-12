@@ -8,9 +8,11 @@ namespace TransOil.DataContext.EntityModels;
 public class MeasurementDevice
 {
     public int DeviceId { get; set; }
-    [Column(TypeName = "varchar(50)")]
+    [Column(TypeName = "varchar(100)")]
     public string Name { get; set; } = null!;
 
-    public IEnumerable<Measurement> Measurements { get; set; } = [];
-    public IEnumerable<MeasurementPoint> MeasurementPoints { get; set; } = [];
+    public int SupplyPointId { get; set; }
+    public SupplyPoint SupplyPoint { get; set; } = null!;
+
+    public ICollection<Measurement> Measurements { get; set; } = [];
 }

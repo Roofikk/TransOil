@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TransOil.DataContext.EntityModels;
 
@@ -8,16 +9,15 @@ namespace TransOil.DataContext.EntityModels;
 public class MeasurementPoint
 {
     public int MeasurementPointId { get; set; }
-    [Column(TypeName = "varchar(50)")]
+    [Column(TypeName = "varchar(100)")]
     public string Name { get; set; } = null!;
 
     public int CustomerId { get; set; }
     public virtual Customer Customer { get; set; } = null!;
 
-    public virtual ElectricEnergyCounter ElectricityCounter { get; set; } = null!;
-    public virtual CurrentTransformer CurrentTransformer { get; set; } = null!;
-    public virtual VoltageTransformer VoltageTransformer { get; set; } = null!;
+    public virtual ElectricityCounter? ElectricityCounter { get; set; }
+    public virtual CurrentTransformer? CurrentTransformer { get; set; }
+    public virtual VoltageTransformer? VoltageTransformer { get; set; }
 
-    public IEnumerable<Measurement> Measurements { get; set; } = [];
-    public IEnumerable<MeasurementDevice> Devices { get; set; } = [];
+    public ICollection<Measurement> Measurements { get; set; } = [];
 }

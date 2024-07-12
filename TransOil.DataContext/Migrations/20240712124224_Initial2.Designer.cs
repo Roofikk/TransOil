@@ -12,8 +12,8 @@ using TransOil.DataContext;
 namespace TransOil.DataContext.Migrations
 {
     [DbContext(typeof(TransOilContext))]
-    [Migration("20240711130815_Initial")]
-    partial class Initial
+    [Migration("20240712124224_Initial2")]
+    partial class Initial2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,21 +24,6 @@ namespace TransOil.DataContext.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
-
-            modelBuilder.Entity("MeasurementDeviceMeasurementPoint", b =>
-                {
-                    b.Property<int>("DevicesDeviceId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MeasurementPointsMeasurementPointId")
-                        .HasColumnType("int");
-
-                    b.HasKey("DevicesDeviceId", "MeasurementPointsMeasurementPointId");
-
-                    b.HasIndex("MeasurementPointsMeasurementPointId");
-
-                    b.ToTable("MeasurementDeviceMeasurementPoint");
-                });
 
             modelBuilder.Entity("TransOil.DataContext.EntityModels.CompanyBase", b =>
                 {
@@ -81,7 +66,7 @@ namespace TransOil.DataContext.Migrations
                     b.Property<string>("Discriminator")
                         .IsRequired()
                         .HasMaxLength(34)
-                        .HasColumnType("varchar(34)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<int>("MeasurementPointId")
                         .HasColumnType("int");
@@ -91,14 +76,18 @@ namespace TransOil.DataContext.Migrations
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("varchar(100)");
 
                     b.Property<DateTime>("VerifyDate")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Counters");
+                    b.HasIndex("MeasurementPointId", "Discriminator")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Counters_MeasurementPointId_Discriminator");
+
+                    b.ToTable("Counters", (string)null);
 
                     b.HasDiscriminator().HasValue("CounterBase");
 
@@ -122,7 +111,7 @@ namespace TransOil.DataContext.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("CustomerId");
 
@@ -131,47 +120,20 @@ namespace TransOil.DataContext.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("TransOil.DataContext.EntityModels.ElectricitySupplyPoint", b =>
-                {
-                    b.Property<int>("SupplyPointId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("SupplyPointId"));
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("MaxVoltage")
-                        .HasColumnType("double");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("varchar(50)");
-
-                    b.HasKey("SupplyPointId");
-
-                    b.HasIndex("CustomerId");
-
-                    b.ToTable("SupplyPoints");
-                });
-
             modelBuilder.Entity("TransOil.DataContext.EntityModels.Measurement", b =>
                 {
-                    b.Property<int>("MeasurementDeviceId")
-                        .HasColumnType("int");
-
                     b.Property<int>("MeasurementPointId")
                         .HasColumnType("int");
 
+                    b.Property<int>("MeasurementDeviceId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("Date")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)")
-                        .HasDefaultValue(new DateTime(2024, 7, 11, 16, 8, 15, 29, DateTimeKind.Local).AddTicks(9853));
+                        .HasColumnType("datetime(6)");
 
-                    b.HasKey("MeasurementDeviceId", "MeasurementPointId", "Date");
+                    b.HasKey("MeasurementPointId", "MeasurementDeviceId", "Date");
 
-                    b.HasIndex("MeasurementPointId");
+                    b.HasIndex("MeasurementDeviceId");
 
                     b.ToTable("Measurements");
                 });
@@ -186,9 +148,15 @@ namespace TransOil.DataContext.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int>("SupplyPointId")
+                        .HasColumnType("int");
 
                     b.HasKey("DeviceId");
+
+                    b.HasIndex("SupplyPointId")
+                        .IsUnique();
 
                     b.ToTable("MeasurementDevices");
                 });
@@ -206,13 +174,38 @@ namespace TransOil.DataContext.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("MeasurementPointId");
 
                     b.HasIndex("CustomerId");
 
                     b.ToTable("MeasurementPoints");
+                });
+
+            modelBuilder.Entity("TransOil.DataContext.EntityModels.SupplyPoint", b =>
+                {
+                    b.Property<int>("SupplyPointId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("SupplyPointId"));
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("MaxVoltage")
+                        .HasColumnType("double");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("SupplyPointId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("SupplyPoints");
                 });
 
             modelBuilder.Entity("TransOil.DataContext.EntityModels.ChildCompany", b =>
@@ -222,7 +215,7 @@ namespace TransOil.DataContext.Migrations
                     b.Property<int>("ParentCompanyId")
                         .HasColumnType("int");
 
-                    b.ToTable("Companies", (string)null);
+                    b.HasIndex("ParentCompanyId");
 
                     b.HasDiscriminator().HasValue("ChildCompany");
                 });
@@ -231,21 +224,16 @@ namespace TransOil.DataContext.Migrations
                 {
                     b.HasBaseType("TransOil.DataContext.EntityModels.CompanyBase");
 
-                    b.ToTable("Companies", (string)null);
-
                     b.HasDiscriminator().HasValue("Company");
                 });
 
-            modelBuilder.Entity("TransOil.DataContext.EntityModels.ElectricEnergyCounter", b =>
+            modelBuilder.Entity("TransOil.DataContext.EntityModels.ElectricityCounter", b =>
                 {
                     b.HasBaseType("TransOil.DataContext.EntityModels.CounterBase");
 
-                    b.HasIndex("MeasurementPointId")
-                        .IsUnique();
+                    b.HasIndex("MeasurementPointId");
 
-                    b.ToTable("Counters", (string)null);
-
-                    b.HasDiscriminator().HasValue("ElectricEnergyCounter");
+                    b.HasDiscriminator().HasValue("ElectricityCounter");
                 });
 
             modelBuilder.Entity("TransOil.DataContext.EntityModels.TransformerCounterBase", b =>
@@ -262,10 +250,7 @@ namespace TransOil.DataContext.Migrations
                 {
                     b.HasBaseType("TransOil.DataContext.EntityModels.TransformerCounterBase");
 
-                    b.HasIndex("MeasurementPointId")
-                        .IsUnique();
-
-                    b.ToTable("Counters", (string)null);
+                    b.HasIndex("MeasurementPointId");
 
                     b.HasDiscriminator().HasValue("CurrentTransformer");
                 });
@@ -274,27 +259,9 @@ namespace TransOil.DataContext.Migrations
                 {
                     b.HasBaseType("TransOil.DataContext.EntityModels.TransformerCounterBase");
 
-                    b.HasIndex("MeasurementPointId")
-                        .IsUnique();
-
-                    b.ToTable("Counters", (string)null);
+                    b.HasIndex("MeasurementPointId");
 
                     b.HasDiscriminator().HasValue("VoltageTransformer");
-                });
-
-            modelBuilder.Entity("MeasurementDeviceMeasurementPoint", b =>
-                {
-                    b.HasOne("TransOil.DataContext.EntityModels.MeasurementDevice", null)
-                        .WithMany()
-                        .HasForeignKey("DevicesDeviceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TransOil.DataContext.EntityModels.MeasurementPoint", null)
-                        .WithMany()
-                        .HasForeignKey("MeasurementPointsMeasurementPointId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("TransOil.DataContext.EntityModels.Customer", b =>
@@ -306,17 +273,6 @@ namespace TransOil.DataContext.Migrations
                         .IsRequired();
 
                     b.Navigation("Company");
-                });
-
-            modelBuilder.Entity("TransOil.DataContext.EntityModels.ElectricitySupplyPoint", b =>
-                {
-                    b.HasOne("TransOil.DataContext.EntityModels.Customer", "Customer")
-                        .WithMany("Supplies")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("TransOil.DataContext.EntityModels.Measurement", b =>
@@ -338,6 +294,17 @@ namespace TransOil.DataContext.Migrations
                     b.Navigation("MeasurementPoint");
                 });
 
+            modelBuilder.Entity("TransOil.DataContext.EntityModels.MeasurementDevice", b =>
+                {
+                    b.HasOne("TransOil.DataContext.EntityModels.SupplyPoint", "SupplyPoint")
+                        .WithOne("MeasurementDevice")
+                        .HasForeignKey("TransOil.DataContext.EntityModels.MeasurementDevice", "SupplyPointId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SupplyPoint");
+                });
+
             modelBuilder.Entity("TransOil.DataContext.EntityModels.MeasurementPoint", b =>
                 {
                     b.HasOne("TransOil.DataContext.EntityModels.Customer", "Customer")
@@ -349,24 +316,36 @@ namespace TransOil.DataContext.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("TransOil.DataContext.EntityModels.ChildCompany", b =>
+            modelBuilder.Entity("TransOil.DataContext.EntityModels.SupplyPoint", b =>
                 {
-                    b.HasOne("TransOil.DataContext.EntityModels.Company", "Company")
-                        .WithMany("ChildCompanies")
-                        .HasForeignKey("CompanyId")
+                    b.HasOne("TransOil.DataContext.EntityModels.Customer", "Customer")
+                        .WithMany("Supplies")
+                        .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Company");
+                    b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("TransOil.DataContext.EntityModels.ElectricEnergyCounter", b =>
+            modelBuilder.Entity("TransOil.DataContext.EntityModels.ChildCompany", b =>
+                {
+                    b.HasOne("TransOil.DataContext.EntityModels.Company", "ParentCompany")
+                        .WithMany("ChildCompanies")
+                        .HasForeignKey("ParentCompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ParentCompany");
+                });
+
+            modelBuilder.Entity("TransOil.DataContext.EntityModels.ElectricityCounter", b =>
                 {
                     b.HasOne("TransOil.DataContext.EntityModels.MeasurementPoint", "MeasurementPoint")
                         .WithOne("ElectricityCounter")
-                        .HasForeignKey("TransOil.DataContext.EntityModels.ElectricEnergyCounter", "MeasurementPointId")
+                        .HasForeignKey("TransOil.DataContext.EntityModels.ElectricityCounter", "MeasurementPointId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_Counters_MeasurementPoints_MeasurementPointId");
 
                     b.Navigation("MeasurementPoint");
                 });
@@ -377,7 +356,8 @@ namespace TransOil.DataContext.Migrations
                         .WithOne("CurrentTransformer")
                         .HasForeignKey("TransOil.DataContext.EntityModels.CurrentTransformer", "MeasurementPointId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_Counters_MeasurementPoints_MeasurementPointId");
 
                     b.Navigation("MeasurementPoint");
                 });
@@ -388,7 +368,8 @@ namespace TransOil.DataContext.Migrations
                         .WithOne("VoltageTransformer")
                         .HasForeignKey("TransOil.DataContext.EntityModels.VoltageTransformer", "MeasurementPointId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_Counters_MeasurementPoints_MeasurementPointId");
 
                     b.Navigation("MeasurementPoint");
                 });
@@ -407,15 +388,18 @@ namespace TransOil.DataContext.Migrations
 
             modelBuilder.Entity("TransOil.DataContext.EntityModels.MeasurementPoint", b =>
                 {
-                    b.Navigation("CurrentTransformer")
-                        .IsRequired();
+                    b.Navigation("CurrentTransformer");
 
-                    b.Navigation("ElectricityCounter")
-                        .IsRequired();
+                    b.Navigation("ElectricityCounter");
 
                     b.Navigation("Measurements");
 
-                    b.Navigation("VoltageTransformer")
+                    b.Navigation("VoltageTransformer");
+                });
+
+            modelBuilder.Entity("TransOil.DataContext.EntityModels.SupplyPoint", b =>
+                {
+                    b.Navigation("MeasurementDevice")
                         .IsRequired();
                 });
 

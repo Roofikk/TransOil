@@ -1,6 +1,6 @@
 ﻿namespace TransOil.DataContext.EntityModels;
 
 
-public class ElectricEnergyCounter : CounterBase
+public class ElectricityCounter : CounterBase
 {
 }
