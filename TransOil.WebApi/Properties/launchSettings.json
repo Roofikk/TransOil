@@ -9,21 +9,10 @@
     }
   },
   "profiles": {
-    "http": {
+    "TransOil.WebApi": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": true,
-      "launchUrl": "swagger",
-      "externalUrlConfiguration": true,
-      "applicationUrl": "http://localhost:8050",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "https": {
-      "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": true,
+      "launchBrowser": false,
       "launchUrl": "swagger",
       "externalUrlConfiguration": true,
       "applicationUrl": "https://localhost:8050;http://localhost:8051",

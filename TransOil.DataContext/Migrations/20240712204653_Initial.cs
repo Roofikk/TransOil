@@ -123,7 +123,7 @@ namespace TransOil.DataContext.Migrations
                     Discriminator = table.Column<string>(type: "varchar(50)", maxLength: 34, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     MeasurementPointId = table.Column<int>(type: "int", nullable: false),
-                    TranformerRatio = table.Column<double>(type: "double", nullable: true)
+                    TransformerRatio = table.Column<double>(type: "double", nullable: true)
                 },
                 constraints: table =>
                 {

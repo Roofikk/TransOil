@@ -1,6 +1,6 @@
 ﻿namespace TransOil.DataContext.EntityModels;
 
-public abstract class TransformerCounterBase : CounterBase
+public class TransformerCounterBase : CounterBase
 {
-    public virtual double TranformerRatio { get; set; }
+    public virtual double TransformerRatio { get; set; }
 }

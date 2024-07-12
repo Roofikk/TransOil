@@ -237,7 +237,7 @@ namespace TransOil.DataContext.Migrations
                 {
                     b.HasBaseType("TransOil.DataContext.EntityModels.CounterBase");
 
-                    b.Property<double>("TranformerRatio")
+                    b.Property<double>("TransformerRatio")
                         .HasColumnType("double");
 
                     b.HasDiscriminator().HasValue("TransformerCounterBase");

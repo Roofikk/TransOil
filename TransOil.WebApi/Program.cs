@@ -20,15 +20,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
-
 app.MapControllers();
 
 if (builder.Configuration.GetValue<bool>("DataRandomFiller:Enabled"))
 {
-    using var scope = app.Services.CreateScope();
-    var dbContext = scope.ServiceProvider.GetRequiredService<TransOilContext>();
-    await dbContext.SeedDataAsync();
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<TransOilContext>();
+        await dbContext.SeedDataAsync();
+    }
 }
 
 app.Run();

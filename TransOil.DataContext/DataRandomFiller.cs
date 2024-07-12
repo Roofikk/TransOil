@@ -52,21 +52,21 @@ public static class DataRandomFiller
                     {
                         Number = rand.Next(1000000, 999999999),
                         Type = typeList[rand.Next(0, typeList.Count - 1)],
-                        VerifyDate = new DateTime(2019, 4, 1).AddDays(-rand.Next(0, 365 * 2)),
+                        VerifyDate = DateTime.Now.AddDays(-rand.Next(0, 365 * 8)),
                     },
                     CurrentTransformer = new CurrentTransformer
                     {
                         Number = rand.Next(1000000, 999999999),
                         Type = typeList[rand.Next(0, typeList.Count - 1)],
-                        VerifyDate = new DateTime(2019, 4, 1).AddDays(-rand.Next(0, 365 * 2)),
-                        TranformerRatio = Math.Round(rand.NextDouble() * 2000 + 2000, 2),
+                        VerifyDate = DateTime.Now.AddDays(-rand.Next(0, 365 * 8)),
+                        TransformerRatio = Math.Round(rand.NextDouble() * 2000 + 2000, 2),
                     },
                     VoltageTransformer = new VoltageTransformer
                     {
                         Number = rand.Next(1000000, 999999999),
                         Type = typeList[rand.Next(0, typeList.Count - 1)],
-                        VerifyDate = new DateTime(2019, 4, 1).AddDays(-rand.Next(0, 365 * 2)),
-                        TranformerRatio = Math.Round(rand.NextDouble() * 2000 + 2000, 2),
+                        VerifyDate = DateTime.Now.AddDays(-rand.Next(0, 365 * 8)),
+                        TransformerRatio = Math.Round(rand.NextDouble() * 2000 + 2000, 2),
                     }
                 }).ToList()
             );
@@ -89,8 +89,8 @@ public static class DataRandomFiller
         await context.SaveChangesAsync();
         var devices = await context.MeasurementDevices.Select(x => x.SupplyPointId).ToListAsync();
 
-        DateTime startDate = new DateTime(2019, 4, 1).AddDays(-365 * 2);
-        DateTime endDate = new DateTime(2019, 4, 1);
+        DateTime startDate = DateTime.Now.AddDays(-365 * 8);
+        DateTime endDate = DateTime.Now;
 
         foreach (var pointId in await context.MeasurementPoints.Select(x => x.MeasurementPointId).ToListAsync())
         {

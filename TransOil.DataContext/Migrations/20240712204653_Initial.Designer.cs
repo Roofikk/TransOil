@@ -12,8 +12,8 @@ using TransOil.DataContext;
 namespace TransOil.DataContext.Migrations
 {
     [DbContext(typeof(TransOilContext))]
-    [Migration("20240712124224_Initial2")]
-    partial class Initial2
+    [Migration("20240712204653_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -240,7 +240,7 @@ namespace TransOil.DataContext.Migrations
                 {
                     b.HasBaseType("TransOil.DataContext.EntityModels.CounterBase");
 
-                    b.Property<double>("TranformerRatio")
+                    b.Property<double>("TransformerRatio")
                         .HasColumnType("double");
 
                     b.HasDiscriminator().HasValue("TransformerCounterBase");
