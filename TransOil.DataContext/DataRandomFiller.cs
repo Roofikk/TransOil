@@ -10,16 +10,16 @@ public static class DataRandomFiller
         await context.Database.EnsureDeletedAsync();
         await context.Database.MigrateAsync();
 
-        context.ParentCompanies.AddRange(Enumerable.Range(1, 20)
+        context.ParentCompanies.AddRange(Enumerable.Range(1, 2)
             .Select(x => new Company
             {
                 Name = $"Company {x}",
                 Address = $"Address {x}",
-                ChildCompanies = Enumerable.Range(1, 3).Select(y => new ChildCompany
+                ChildCompanies = Enumerable.Range(1, 2).Select(y => new ChildCompany
                 {
                     Name = $"Company {x}.{y}",
                     Address = $"Address {x}.{y}",
-                    Customers = Enumerable.Range(1, 5).Select(z => new Customer
+                    Customers = Enumerable.Range(1, 4).Select(z => new Customer
                     {
                         Name = $"Customer {x} of Company {x}.{y}",
                         Address = $"Address {x}.{y}.{z}",
@@ -43,7 +43,7 @@ public static class DataRandomFiller
 
         foreach (var customer in await context.Customers.ToListAsync())
         {
-            await context.MeasurementPoints.AddRangeAsync(Enumerable.Range(1, 5)
+            await context.MeasurementPoints.AddRangeAsync(Enumerable.Range(1, 4)
                 .Select(x => new MeasurementPoint
                 {
                     Customer = customer,
@@ -71,7 +71,7 @@ public static class DataRandomFiller
                 }).ToList()
             );
 
-            await context.SupplyPoints.AddRangeAsync(Enumerable.Range(1, 5)
+            await context.SupplyPoints.AddRangeAsync(Enumerable.Range(1, 4)
                 .Select(i => new SupplyPoint
                 {
                     Customer = customer,
@@ -99,7 +99,7 @@ public static class DataRandomFiller
                 var dates = Enumerable.Range(0, (endDate - startDate).Days + 1)
                     .Select(d => startDate.AddDays(d))
                     .OrderBy(x => rand.Next())
-                    .Take(3);
+                    .Take(4);
 
                 await context.Measurements.AddRangeAsync(dates.Select(x => new Measurement
                 {

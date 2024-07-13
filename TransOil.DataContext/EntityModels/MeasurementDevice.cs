@@ -12,7 +12,7 @@ public class MeasurementDevice
     public string Name { get; set; } = null!;
 
     public int SupplyPointId { get; set; }
-    public SupplyPoint SupplyPoint { get; set; } = null!;
+    public virtual SupplyPoint SupplyPoint { get; set; } = null!;
 
-    public ICollection<Measurement> Measurements { get; set; } = [];
+    public virtual ICollection<Measurement> Measurements { get; set; } = [];
 }

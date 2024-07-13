@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TransOil.DataContext;
-using TransOil.DataContext.EntityModels;
+using TransOil.WebApi.Dto.MeasurementDevices;
 
 namespace TransOil.WebApi.Controllers;
 
@@ -19,14 +19,38 @@ public class MeasurementDevicesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MeasurementDevice>>> Get()
+    public async Task<ActionResult<IEnumerable<MeasurementDeviceDto>>> Get([FromQuery] TimeInterval timeInterval)
     {
-        return await _context.MeasurementDevices.AsNoTracking().ToListAsync();
+        return Ok(await _context.MeasurementDevices.SelectMany(x => x.Measurements
+            .Where(y => y.Date >= timeInterval.DateFrom && y.Date <= timeInterval.DateTo),
+                (x, y) => new MeasurementDeviceDto
+                {
+                    DeviceId = x.DeviceId,
+                    Name = x.Name,
+                    SupplyPointId = x.SupplyPointId,
+                    MeasurementDate = y.Date,
+                }).ToListAsync());
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<MeasurementDevice?>> Get(int id)
+    /// <summary>
+    /// Задание 1.2.2. Получение списка измерительных устройств за 2018 год
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("get2018")]
+    public async Task<ActionResult<IEnumerable<MeasurementDeviceDto>>> Get()
     {
-        return await _context.MeasurementDevices.AsNoTracking().FirstOrDefaultAsync(x => x.DeviceId == id);
+        return await Get(new TimeInterval()
+        {
+            DateFrom = new DateTime(2018, 1, 1),
+            DateTo = new DateTime(2018, 12, 31)
+        });
     }
+}
+
+public class TimeInterval
+{
+    [FromQuery(Name = "from")]
+    public DateTime? DateFrom { get; set; }
+    [FromQuery(Name = "to")]
+    public DateTime? DateTo { get; set; }
 }

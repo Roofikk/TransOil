@@ -1,6 +1,6 @@
-@TransOil.WebApi_HostAddress = http://localhost:5100
+@TransOil.WebApi_HostAddress = http://localhost:8051;https://localhost:8050
 
-GET {{TransOil.WebApi_HostAddress}}/weatherforecast/
+GET {{TransOil.WebApi_HostAddress}}/api
 Accept: application/json
 
 ###
