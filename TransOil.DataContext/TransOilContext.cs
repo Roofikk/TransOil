@@ -15,7 +15,7 @@ public class TransOilContext : DbContext
 
     public DbSet<CounterBase> Counters { get; set; }
     public DbSet<ElectricityCounter> ElectricEnergyCounters { get; set; }
-    public DbSet<TransformerCounterBase> ElectricCounters { get; set; }
+    public DbSet<TransformerCounterBase> TransformerCounters { get; set; }
     public DbSet<CurrentTransformer> CurrentTransformers { get; set; }
     public DbSet<VoltageTransformer> VoltageTransformers { get; set; }
 
@@ -94,9 +94,9 @@ public class TransOilContext : DbContext
         {
             e.ToTable("Counters")
                 .HasDiscriminator(x => x.Discriminator)
-                .HasValue<ElectricityCounter>("ElectricityCounter")
-                .HasValue<CurrentTransformer>("CurrentTransformer")
-                .HasValue<VoltageTransformer>("VoltageTransformer");
+                .HasValue<ElectricityCounter>("Electricity")
+                .HasValue<CurrentTransformer>("Current")
+                .HasValue<VoltageTransformer>("Voltage");
 
             e.HasKey(x => x.Id);
             e.Property(x => x.Id).ValueGeneratedOnAdd();

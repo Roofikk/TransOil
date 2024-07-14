@@ -10,12 +10,12 @@ public static class DataRandomFiller
         await context.Database.EnsureDeletedAsync();
         await context.Database.MigrateAsync();
 
-        context.ParentCompanies.AddRange(Enumerable.Range(1, 2)
+        context.ParentCompanies.AddRange(Enumerable.Range(1, 4)
             .Select(x => new Company
             {
                 Name = $"Company {x}",
                 Address = $"Address {x}",
-                ChildCompanies = Enumerable.Range(1, 2).Select(y => new ChildCompany
+                ChildCompanies = Enumerable.Range(1, 4).Select(y => new ChildCompany
                 {
                     Name = $"Company {x}.{y}",
                     Address = $"Address {x}.{y}",
@@ -43,7 +43,7 @@ public static class DataRandomFiller
 
         foreach (var customer in await context.Customers.ToListAsync())
         {
-            await context.MeasurementPoints.AddRangeAsync(Enumerable.Range(1, 4)
+            await context.MeasurementPoints.AddRangeAsync(Enumerable.Range(1, 8)
                 .Select(x => new MeasurementPoint
                 {
                     Customer = customer,
@@ -71,7 +71,7 @@ public static class DataRandomFiller
                 }).ToList()
             );
 
-            await context.SupplyPoints.AddRangeAsync(Enumerable.Range(1, 4)
+            await context.SupplyPoints.AddRangeAsync(Enumerable.Range(1, 2)
                 .Select(i => new SupplyPoint
                 {
                     Customer = customer,

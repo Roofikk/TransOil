@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TransOil.DataContext;
 
@@ -11,9 +12,11 @@ using TransOil.DataContext;
 namespace TransOil.DataContext.Migrations
 {
     [DbContext(typeof(TransOilContext))]
-    partial class TransOilContextModelSnapshot : ModelSnapshot
+    [Migration("20240713145253_ChangeDiscriminatorValues")]
+    partial class ChangeDiscriminatorValues
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -114,7 +117,7 @@ namespace TransOil.DataContext.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("TransOil.DataContext.EntityModels.Measurement", b =>
@@ -132,7 +135,7 @@ namespace TransOil.DataContext.Migrations
 
                     b.HasIndex("MeasurementDeviceId");
 
-                    b.ToTable("Measurements", (string)null);
+                    b.ToTable("Measurements");
                 });
 
             modelBuilder.Entity("TransOil.DataContext.EntityModels.MeasurementDevice", b =>
@@ -155,7 +158,7 @@ namespace TransOil.DataContext.Migrations
                     b.HasIndex("SupplyPointId")
                         .IsUnique();
 
-                    b.ToTable("MeasurementDevices", (string)null);
+                    b.ToTable("MeasurementDevices");
                 });
 
             modelBuilder.Entity("TransOil.DataContext.EntityModels.MeasurementPoint", b =>
@@ -177,7 +180,7 @@ namespace TransOil.DataContext.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("MeasurementPoints", (string)null);
+                    b.ToTable("MeasurementPoints");
                 });
 
             modelBuilder.Entity("TransOil.DataContext.EntityModels.SupplyPoint", b =>
@@ -202,7 +205,7 @@ namespace TransOil.DataContext.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("SupplyPoints", (string)null);
+                    b.ToTable("SupplyPoints");
                 });
 
             modelBuilder.Entity("TransOil.DataContext.EntityModels.ChildCompany", b =>

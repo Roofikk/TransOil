@@ -2,8 +2,7 @@
 
 namespace TransOil.WebApi.Dto.Counters;
 
-public class TransformerCounterCreateDto : TransformerCounterDto
+public class TransformerCounterCreateDto : CounterCreateDto
 {
-    [JsonIgnore]
-    public override int Id { get; set; }
+    public double? TransformerRatio { get; set; }
 }

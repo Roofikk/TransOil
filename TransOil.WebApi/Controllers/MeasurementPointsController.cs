@@ -81,7 +81,7 @@ public class MeasurementPointsController : ControllerBase
                 Number = measurementPoint.CurrentTransformerCounter.Number,
                 Type = measurementPoint.CurrentTransformerCounter.Type,
                 VerifyDate = measurementPoint.CurrentTransformerCounter.VerifyDate,
-                TransformerRatio = measurementPoint.CurrentTransformerCounter.TransformerRatio
+                TransformerRatio = measurementPoint.CurrentTransformerCounter.TransformerRatio!.Value
             };
         }
 
@@ -92,7 +92,7 @@ public class MeasurementPointsController : ControllerBase
                 Number = measurementPoint.VoltageTransformerCounter.Number,
                 Type = measurementPoint.VoltageTransformerCounter.Type,
                 VerifyDate = measurementPoint.VoltageTransformerCounter.VerifyDate,
-                TransformerRatio = measurementPoint.VoltageTransformerCounter.TransformerRatio
+                TransformerRatio = measurementPoint.VoltageTransformerCounter.TransformerRatio!.Value
             };
         }
 
