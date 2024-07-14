@@ -14,7 +14,7 @@ public class CustomersService : ICustomersService
         _context = context;
     }
 
-    public async Task<IEnumerable<CounterBase>> GetExpiredCountersOfCustomer(int id, string? types)
+    public async Task<List<CounterBase>> GetExpiredCountersOfCustomer(int id, string? types)
     {
         var counterValues = types?.Split(',', StringSplitOptions.RemoveEmptyEntries)
             .Select(s => Enum.TryParse(typeof(CounterType), s.Trim(), ignoreCase: true, out var result) ? result : null)

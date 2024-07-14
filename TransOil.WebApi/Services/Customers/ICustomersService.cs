@@ -4,5 +4,5 @@ namespace TransOil.WebApi.Services.Customers;
 
 public interface ICustomersService
 {
-    public Task<IEnumerable<CounterBase>> GetExpiredCountersOfCustomer(int id, string? types);
+    public Task<List<CounterBase>> GetExpiredCountersOfCustomer(int id, string? types);
 }

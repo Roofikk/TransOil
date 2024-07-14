@@ -5,11 +5,14 @@ namespace TransOil.DataContext.DataFiller;
 
 public static class DataRandomFiller
 {
-    public static async Task SeedDataAsync(this TransOilContext context)
+    public static async Task InitialAsync(this TransOilContext context)
     {
         await context.Database.EnsureDeletedAsync();
         await context.Database.MigrateAsync();
+    }
 
+    public static async Task SeedDataAsync(this TransOilContext context)
+    {
         context.ParentCompanies.AddRange(Enumerable.Range(1, 4)
             .Select(x => new Company
             {
