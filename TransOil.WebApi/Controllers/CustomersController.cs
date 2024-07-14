@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TransOil.DataContext;
 using TransOil.DataContext.EntityModels;
 using TransOil.WebApi.Dto.Counters;
 using TransOil.WebApi.Services.Customers;
