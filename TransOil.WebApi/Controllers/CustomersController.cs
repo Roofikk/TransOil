@@ -81,7 +81,7 @@ public class CustomersController : ControllerBase
     [HttpGet("{id}/get-all-expired-counters")]
     public async Task<ActionResult<IEnumerable<TransformerCounterRetrieveDto>>> GetAllExpiredCounters(int id)
     {
-        return Ok(await GetExpiredCounters(id, null));
+        return await GetExpiredCounters(id, null);
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public class CustomersController : ControllerBase
     [HttpGet("{id}/get-expired-voltage-counters")]
     public async Task<ActionResult<IEnumerable<TransformerCounterRetrieveDto>>> GetExpiredVoltageCounters(int id)
     {
-        return Ok(await GetExpiredCounters(id, "Voltage"));
+        return await GetExpiredCounters(id, "Voltage");
     }
 
     /// <summary>
@@ -103,7 +103,7 @@ public class CustomersController : ControllerBase
     [HttpGet("{id}/get-expired-current-counters")]
     public async Task<ActionResult<IEnumerable<TransformerCounterRetrieveDto>>> GetExpiredCurrentCounters(int id)
     {
-        return Ok(await GetExpiredCounters(id, "Current"));
+        return await GetExpiredCounters(id, "Current");
     }
 
     private TransformerCounterRetrieveDto MapCounter(CounterBase counter)

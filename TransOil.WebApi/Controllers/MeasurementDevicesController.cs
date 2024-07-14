@@ -21,7 +21,7 @@ public class MeasurementDevicesController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MeasurementDeviceDto>>> Get([FromQuery] TimeInterval timeInterval)
     {
-        return Ok(await _context.MeasurementDevices.SelectMany(x => x.Measurements
+        var query = _context.MeasurementDevices.SelectMany(x => x.Measurements
             .Where(y => y.Date >= timeInterval.DateFrom && y.Date <= timeInterval.DateTo),
                 (x, y) => new MeasurementDeviceDto
                 {
@@ -29,7 +29,9 @@ public class MeasurementDevicesController : ControllerBase
                     Name = x.Name,
                     SupplyPointId = x.SupplyPointId,
                     MeasurementDate = y.Date,
-                }).ToListAsync());
+                });
+
+        return Ok(await query.ToListAsync());
     }
 
     /// <summary>
@@ -42,7 +44,7 @@ public class MeasurementDevicesController : ControllerBase
         return await Get(new TimeInterval()
         {
             DateFrom = new DateTime(2018, 1, 1),
-            DateTo = new DateTime(2018, 12, 31)
+            DateTo = new DateTime(2018, 12, 31, 23, 59, 59)
         });
     }
 }

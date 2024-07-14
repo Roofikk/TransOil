@@ -43,7 +43,7 @@ public static class DataRandomFiller
 
         foreach (var customer in await context.Customers.ToListAsync())
         {
-            await context.MeasurementPoints.AddRangeAsync(Enumerable.Range(1, 8)
+            await context.MeasurementPoints.AddRangeAsync(Enumerable.Range(1, 2)
                 .Select(x => new MeasurementPoint
                 {
                     Customer = customer,
