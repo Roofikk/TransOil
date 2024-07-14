@@ -1,9 +1,11 @@
 using TransOil.DataContext;
 using TransOil.DataContext.DataFiller;
+using TransOil.WebApi.Services.Customers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddTransOilContext(builder.Configuration.GetConnectionString("DefaultConnection"));
+builder.Services.AddScoped<ICustomersService, CustomersService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

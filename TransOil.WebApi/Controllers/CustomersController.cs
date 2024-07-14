@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel;
-using System.Globalization;
-using System.Net.Http.Headers;
 using TransOil.DataContext;
 using TransOil.DataContext.EntityModels;
 using TransOil.WebApi.Dto.Counters;
+using TransOil.WebApi.Services.Customers;
 
 namespace TransOil.WebApi.Controllers;
 
@@ -14,29 +12,12 @@ namespace TransOil.WebApi.Controllers;
 public class CustomersController : ControllerBase
 {
     private readonly ILogger<CustomersController> _logger;
-    private readonly TransOilContext _context;
+    private readonly ICustomersService _customersService;
 
-    public CustomersController(ILogger<CustomersController> logger, TransOilContext context)
+    public CustomersController(ILogger<CustomersController> logger, ICustomersService customersService)
     {
         _logger = logger;
-        _context = context;
-    }
-
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Customer>>> Get()
-    {
-        return Ok();
-    }
-
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Customer>> Get(int id)
-    {
-        if (!await _context.Customers.AnyAsync(x => x.CustomerId == id))
-        {
-            return NotFound();
-        }
-
-        return Ok();
+        _customersService = customersService;
     }
 
     /// <summary>
@@ -50,27 +31,7 @@ public class CustomersController : ControllerBase
     public async Task<ActionResult<IEnumerable<TransformerCounterRetrieveDto>>> GetExpiredCounters(int id,
         [FromQuery(Name = "types")] string? types)
     {
-        var counterValues = types?.Split(',', StringSplitOptions.RemoveEmptyEntries)
-            .Select(s => Enum.TryParse(typeof(CounterType), s.Trim(), ignoreCase: true, out var result) ? result : null)
-            .Where(r => r != null)
-            .Cast<CounterType>()
-            .Select(x => x.ToString())
-            .ToList() ?? [];
-
-        var query = _context.Counters.Where(x =>
-            (x is ElectricityCounter && ((ElectricityCounter)x).MeasurementPoint.CustomerId == id) ||
-            (x is CurrentTransformer && ((CurrentTransformer)x).MeasurementPoint.CustomerId == id) ||
-            (x is VoltageTransformer && ((VoltageTransformer)x).MeasurementPoint.CustomerId == id));
-
-        // выбрал промежуток истечения срока поверки по средним значениям счетчиков в течение 5 лет
-        query = query.Where(x => x.VerifyDate.AddYears(5) < DateTime.Now);
-
-        if (counterValues.Count > 0)
-        {
-            query = query.Where(x => counterValues.Contains(x.Discriminator));
-        }
-
-        return Ok(MapCounters(await query.ToListAsync()));
+        return Ok(MapCounters(await _customersService.GetExpiredCountersOfCustomer(id, types)));
     }
 
     /// <summary>
@@ -81,7 +42,7 @@ public class CustomersController : ControllerBase
     [HttpGet("{id}/get-all-expired-counters")]
     public async Task<ActionResult<IEnumerable<TransformerCounterRetrieveDto>>> GetAllExpiredCounters(int id)
     {
-        return await GetExpiredCounters(id, null);
+        return Ok(MapCounters(await _customersService.GetExpiredCountersOfCustomer(id, null)));
     }
 
     /// <summary>
@@ -92,7 +53,7 @@ public class CustomersController : ControllerBase
     [HttpGet("{id}/get-expired-voltage-counters")]
     public async Task<ActionResult<IEnumerable<TransformerCounterRetrieveDto>>> GetExpiredVoltageCounters(int id)
     {
-        return await GetExpiredCounters(id, "Voltage");
+        return Ok(MapCounters(await _customersService.GetExpiredCountersOfCustomer(id, "Voltage")));
     }
 
     /// <summary>
@@ -103,7 +64,7 @@ public class CustomersController : ControllerBase
     [HttpGet("{id}/get-expired-current-counters")]
     public async Task<ActionResult<IEnumerable<TransformerCounterRetrieveDto>>> GetExpiredCurrentCounters(int id)
     {
-        return await GetExpiredCounters(id, "Current");
+        return Ok(MapCounters(await _customersService.GetExpiredCountersOfCustomer(id, "Current")));
     }
 
     private TransformerCounterRetrieveDto MapCounter(CounterBase counter)
