@@ -18,5 +18,5 @@ public class MeasurementPoint
     public virtual CurrentTransformer? CurrentTransformer { get; set; }
     public virtual VoltageTransformer? VoltageTransformer { get; set; }
 
-    public ICollection<Measurement> Measurements { get; set; } = [];
+    public virtual ICollection<Measurement> Measurements { get; set; } = [];
 }

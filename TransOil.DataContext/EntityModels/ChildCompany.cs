@@ -8,5 +8,5 @@ public class ChildCompany : CompanyBase
     public int ParentCompanyId { get; set; }
     public Company ParentCompany { get; set; } = null!;
 
-    public IEnumerable<Customer> Customers { get; set; } = [];
+    public virtual ICollection<Customer> Customers { get; set; } = [];
 }

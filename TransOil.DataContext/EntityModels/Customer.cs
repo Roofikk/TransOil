@@ -15,6 +15,6 @@ public class Customer
     public int CompanyId { get; set; }
     public ChildCompany Company { get; set; } = null!;
 
-    public ICollection<MeasurementPoint> Measurments { get; set; } = [];
-    public ICollection<SupplyPoint> Supplies { get; set; } = [];
+    public virtual ICollection<MeasurementPoint> Measurments { get; set; } = [];
+    public virtual ICollection<SupplyPoint> Supplies { get; set; } = [];
 }

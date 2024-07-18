@@ -12,8 +12,8 @@ public class SupplyPoint
     public string Name { get; set; } = null!;
     public double MaxVoltage { get; set; }
 
-    public MeasurementDevice MeasurementDevice { get; set; } = null!;
+    public virtual MeasurementDevice MeasurementDevice { get; set; } = null!;
 
     public int CustomerId { get; set; }
-    public Customer Customer { get; set; } = null!;
+    public virtual Customer Customer { get; set; } = null!;
 }
